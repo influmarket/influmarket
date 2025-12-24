@@ -5,40 +5,41 @@ const PORT = process.env.PORT || 3000;
 
 app.get("*", (req, res) => {
   res.setHeader("Content-Type", "text/html; charset=utf-8");
-  res.send(`
+  res.status(200).send(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>influ.market – Hire Influencers</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Hire verified influencers in Serbia." />
+  <meta charset="UTF-8">
+  <title>influ.market</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hire verified influencers in Serbia">
   <style>
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: #ffffff;
-      color: #111;
+      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      background: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: #111;
     }
-    .container {
+    .wrapper {
       text-align: center;
       max-width: 520px;
       padding: 40px 20px;
     }
     h1 {
       font-size: 42px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      letter-spacing: -1px;
     }
-    .tagline {
+    p {
       font-size: 20px;
       color: #555;
-      margin-bottom: 35px;
+      margin-bottom: 32px;
     }
-    .buttons a {
+    a {
       display: inline-block;
       margin: 8px;
       padding: 14px 26px;
@@ -48,33 +49,29 @@ app.get("*", (req, res) => {
       font-weight: 600;
       color: #111;
     }
-    .buttons a.primary {
+    a.primary {
       background: #111;
       color: #fff;
     }
-    .footer {
+    footer {
+      margin-top: 32px;
       font-size: 14px;
       color: #777;
-      margin-top: 30px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrapper">
     <h1>influ.market</h1>
-    <div class="tagline">
-      Hire verified influencers in Serbia.
-    </div>
+    <p>Hire verified influencers in Serbia.</p>
 
-    <div class="buttons">
-      <a class="primary" href="#">Apply as Influencer</a>
-      <a href="#">Join as Client</a>
-    </div>
+    <a href="#" class="primary">Apply as Influencer</a>
+    <a href="#">Join as Client</a>
 
-    <div class="footer">
-      Marketplace launching soon<br/>
+    <footer>
+      Marketplace launching soon<br>
       Company based in Miami, USA
-    </div>
+    </footer>
   </div>
 </body>
 </html>
@@ -82,5 +79,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
+  console.log("influmarket running on port " + PORT);
 });
