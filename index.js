@@ -1,2 +1,1 @@
-// Forward execution to server.js
-require("./server");
+require("./server.js");
