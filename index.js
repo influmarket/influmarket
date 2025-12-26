@@ -63,10 +63,14 @@ app.get("*", (req, res) => {
 <body>
   <div class="box">
     <h1>influ.market</h1>
-    <p>Hire verified influencers in Serbia.</p>
 
-    <a href="#" class="primary">Apply as Influencer</a>
-    <a href="#">Join as Client</a>
+    <p>Launching soon — hire verified influencers in Serbia.</p>
+
+    <a 
+      href="https://docs.google.com/forms/d/e/1FAIpQLScQ3ktJwoEKiKiLA35LkrK2SdzrlSJyFweY9bTOXB0_8Y3cXA/viewform?usp=dialog"
+      class="primary">
+      Join Launch Waitlist
+    </a>
 
     <footer>
       Marketplace launching soon<br />
