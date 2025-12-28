@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 
+// Use Hostinger's assigned port or default to 3000 for local testing
 const PORT = process.env.PORT || 3000;
 
 // 1. REUSABLE LAYOUT
@@ -30,19 +31,21 @@ function renderPage({ title, heading, subheading, buttons }) {
     .wrap { text-align: center; max-width: 640px; padding: 40px 20px; }
     h1 { font-size: 42px; margin-bottom: 12px; }
     h2 { font-size: 28px; margin-bottom: 12px; }
-    p { font-size: 18px; color: #555; margin-bottom: 28px; }
+    p { font-size: 18px; color: #555; margin-bottom: 28px; line-height: 1.5; }
     .btn-container { display: flex; flex-direction: column; gap: 12px; align-items: center; }
     .btn {
       display: inline-block;
       width: 100%;
-      max-width: 300px;
-      padding: 14px 30px;
+      max-width: 320px;
+      padding: 16px 30px;
       border-radius: 999px;
       text-decoration: none;
       font-weight: 600;
       background: #111;
       color: #fff;
+      transition: opacity 0.2s;
     }
+    .btn:hover { opacity: 0.8; }
     footer { margin-top: 48px; font-size: 14px; color: #777; }
   </style>
 </head>
@@ -54,53 +57,77 @@ function renderPage({ title, heading, subheading, buttons }) {
     <div class="btn-container">
       ${buttonHtml}
     </div>
-    <footer>Marketplace launching soon</footer>
+    <footer>Marketplace launching soon • Miami & Belgrade</footer>
   </div>
 </body>
 </html>`;
 }
 
-// 2. ROUTES (Order matters!)
+// 2. ROUTES
 
-// HOME
+// BRAND-FIRST HOMEPAGE (/)
 app.get("/", (req, res) => {
   res.send(renderPage({
     title: "influ.market – Serbia",
-    heading: "The creator economy in Serbia, verified.",
+    heading: "Hire verified micro-influencers in Serbia.",
+    subheading: "Beauty, fitness, tech & lifestyle creators with real engagement. No agencies. No fake numbers.",
     buttons: [
-      { label: "I am an Influencer", href: "/influencers" },
-      { label: "I am a Brand", href: "/clients" }
+      { label: "Apply as Brand", href: "/clients" },
+      { label: "Are you an Influencer? Apply to Join", href: "/apply/influencer" }
     ]
   }));
 });
 
-// INFLUENCERS PAGE
+// MARKETPLACE PREVIEW (/influencers)
+// This serves as proof for brands that talent is ready.
 app.get("/influencers", (req, res) => {
   res.send(renderPage({
-    title: "For Influencers – influ.market",
-    heading: "Apply as Influencer",
-    subheading: "Get early access to paid campaigns in Serbia.",
+    title: "Discover Influencers – influ.market",
+    heading: "Preview of creators on influ.market",
+    subheading: "Early marketplace preview. Final listings and pricing will be adjusted per campaign.",
     buttons: [
-      { label: "Join Waitlist", href: "https://docs.google.com/forms/d/11VXifpfSJ2SObzcgSZS_WiVLtrMIaU-WsIlehflO4eU/viewform", external: true },
+      { label: "Apply as Brand / Client", href: "/clients" },
       { label: "← Back", href: "/" }
     ]
   }));
 });
 
-// CLIENTS PAGE
+// INFLUENCER APPLICATION (/apply/influencer)
+// High-stakes, invite-only application path.
+app.get("/apply/influencer", (req, res) => {
+  res.send(renderPage({
+    title: "Apply as Influencer – influ.market",
+    heading: "Apply to join influ.market",
+    subheading: "influ.market is invite-only. We work with a limited number of vetted creators in Serbia.",
+    buttons: [
+      {
+        label: "Apply for Consideration",
+        href: "https://docs.google.com/forms/d/11VXifpfSJ2SObzcgSZS_WiVLtrMIaU-WsIlehflO4eU/viewform",
+        external: true
+      },
+      { label: "← Back", href: "/" }
+    ]
+  }));
+});
+
+// BRAND APPLICATION (/clients)
 app.get("/clients", (req, res) => {
   res.send(renderPage({
     title: "For Brands – influ.market",
     heading: "Apply as Brand",
     subheading: "Hire vetted influencers with real engagement.",
     buttons: [
-      { label: "Get Early Access", href: "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform", external: true },
+      { 
+        label: "Get Early Access", 
+        href: "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform", 
+        external: true 
+      },
       { label: "← Back", href: "/" }
     ]
   }));
 });
 
-// 404 PAGE (Always keep this last)
+// 404 CATCH-ALL (Must stay last to avoid blocking other routes)
 app.get("*", (req, res) => {
   res.status(404).send(renderPage({
     title: "404 - Not Found",
