@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 
 // === Google Sheet config for influencers ===========================
 const INFLU_SHEET_ID = "1MJAvgLtjatLoSPqMkky3tYCFhI-uUNZQvrJxzFW5i3U";
-// Use this tab (gid) for influencers:
+// Tab (gid) for influencers:
 const INFLU_SHEET_GID = "1432199755";
 const MIN_FOLLOWERS = 5000; // only show 5k+
 
@@ -38,7 +38,14 @@ function parseFollowers(raw) {
   return Number.isNaN(num) ? null : num;
 }
 
-function renderPage({ title, heading, subheading, buttonLabel, buttonHref, bodyHtml }) {
+function renderPage({
+  title,
+  heading,
+  subheading,
+  buttonLabel,
+  buttonHref,
+  bodyHtml
+}) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -156,7 +163,11 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref, bodyH
     <h1>influ.market</h1>
     ${heading ? `<h2>${heading}</h2>` : ""}
     ${subheading ? `<p>${subheading}</p>` : ""}
-    ${buttonLabel && buttonHref ? `<a class="btn" href="${buttonHref}" target="_blank" rel="noopener">${buttonLabel}</a>` : ""}
+    ${
+      buttonLabel && buttonHref
+        ? `<a class="btn" href="${buttonHref}" target="_blank" rel="noopener">${buttonLabel}</a>`
+        : ""
+    }
     ${bodyHtml || ""}
     <footer>
       Marketplace launching soon<br />
@@ -190,7 +201,7 @@ async function fetchInfluencersFromSheet() {
   }
 
   const influencers = rows
-    .map(row => {
+    .map((row) => {
       const name = cell(row, INFLU_COLS.name);
       if (!name) return null;
 
@@ -209,7 +220,7 @@ async function fetchInfluencersFromSheet() {
       };
     })
     .filter(Boolean)
-    .filter(inf => !inf.followers || inf.followers >= MIN_FOLLOWERS);
+    .filter((inf) => !inf.followers || inf.followers >= MIN_FOLLOWERS);
 
   influencers.sort((a, b) => (b.followers || 0) - (a.followers || 0));
   return influencers;
@@ -231,7 +242,7 @@ app.get("/", (req, res) => {
   );
 });
 
-// APPLY – INFLUENCER (🔗 NEW INFLUENCER FORM)
+// APPLY – INFLUENCER (uses your new influencer form)
 app.get("/apply/influencer", (req, res) => {
   res.status(200).send(
     renderPage({
@@ -241,12 +252,12 @@ app.get("/apply/influencer", (req, res) => {
         "Get early access to paid campaigns with verified brands in Serbia.",
       buttonLabel: "Join Influencer Waitlist",
       buttonHref:
-        "https://docs.google.com/forms/d/e/1FAIpQLSdu4-BfogXhBgUhYIF1BlpXUpp9WPfa7nRe-KGdn2T-89annQ/viewform"
+        "https://docs.google.com/forms/d/11VXifpfSJ2SObzcgSZS_WiVLtrMIaU-WsIlehflO4eU/viewform"
     })
   );
 });
 
-// APPLY – CLIENT / BRAND (🔗 BRAND FORM)
+// APPLY – CLIENT / BRAND (uses your new brand form)
 app.get("/apply/client", (req, res) => {
   res.status(200).send(
     renderPage({
@@ -256,7 +267,7 @@ app.get("/apply/client", (req, res) => {
         "Join the waitlist to access vetted influencers and campaign tools.",
       buttonLabel: "Join Client Waitlist",
       buttonHref:
-        "https://docs.google.com/forms/d/e/1FAIpQLSfjK-X9CMYe3qTZXvb_pXhGtIF2xz8877vC4MrE9o4xIPXyiA/viewform"
+        "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform"
     })
   );
 });
@@ -270,7 +281,7 @@ app.get("/influencers", async (req, res) => {
       influencers.length === 0
         ? `<p class="intro">No influencers yet — be the first to apply!</p>`
         : influencers
-            .map(inf => {
+            .map((inf) => {
               const followersPart = inf.followersLabel
                 ? `${escapeHtml(inf.followersLabel)} followers`
                 : "";
@@ -287,7 +298,9 @@ app.get("/influencers", async (req, res) => {
               }</h3>
           <p class="extra">
             ${inf.niche ? escapeHtml(inf.niche) : ""}${
-                inf.location ? (inf.niche ? " · " : "") + escapeHtml(inf.location) : ""
+                inf.location
+                  ? (inf.niche ? " · " : "") + escapeHtml(inf.location)
+                  : ""
               }
           </p>
           ${metaLine ? `<p class="meta">${metaLine}</p>` : ""}
