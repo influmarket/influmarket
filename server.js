@@ -3,8 +3,13 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// Reusable layout
-function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
+// 1. IMPROVED LAYOUT ENGINE
+// Added support for multiple buttons and better styling
+function renderPage({ title, heading, subheading, buttons, footerText }) {
+  const buttonHtml = buttons ? buttons.map(btn => 
+    `<a class="btn" href="${btn.href}" ${btn.external ? 'target="_blank" rel="noopener"' : ''}>${btn.label}</a>`
+  ).join('') : '';
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,45 +28,37 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       background: #ffffff;
       color: #111;
+      line-height: 1.5;
     }
     .wrap {
       text-align: center;
       max-width: 640px;
       padding: 40px 20px 60px;
     }
-    h1 {
-      font-size: 42px;
-      margin-bottom: 12px;
-      letter-spacing: -0.5px;
-    }
-    h2 {
-      font-size: 28px;
-      margin: 0 0 12px;
-      letter-spacing: -0.5px;
-    }
-    p {
-      font-size: 18px;
-      color: #555;
-      margin: 0 0 28px;
-    }
+    h1 { font-size: 42px; margin-bottom: 12px; letter-spacing: -1px; }
+    h2 { font-size: 28px; margin: 0 0 12px; letter-spacing: -0.5px; }
+    p { font-size: 18px; color: #555; margin: 0 0 28px; }
+    .btn-container { display: flex; flex-direction: column; gap: 12px; align-items: center; }
     .btn {
       display: inline-block;
-      margin: 8px 0;
+      width: 100%;
+      max-width: 300px;
       padding: 14px 30px;
       border-radius: 999px;
-      border: none;
-      cursor: pointer;
       text-decoration: none;
       font-weight: 600;
       font-size: 16px;
       background: #111;
       color: #fff;
+      transition: transform 0.1s ease;
     }
-    .btn:hover { opacity: 0.9; }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
     footer {
-      margin-top: 32px;
-      font-size: 14px;
-      color: #777;
+      margin-top: 48px;
+      font-size: 13px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
   </style>
 </head>
@@ -70,133 +67,82 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
     <h1>influ.market</h1>
     ${heading ? `<h2>${heading}</h2>` : ""}
     ${subheading ? `<p>${subheading}</p>` : ""}
-    ${
-      buttonLabel && buttonHref
-        ? `<a class="btn" href="${buttonHref}" target="_blank" rel="noopener">${buttonLabel}</a>`
-        : ""
-    }
+    <div class="btn-container">
+      ${buttonHtml}
+    </div>
     <footer>
-      Marketplace launching soon<br />
-      Company based in Miami, USA
+      ${footerText || "Marketplace launching soon • Miami & Belgrade"}
     </footer>
   </div>
 </body>
 </html>`;
 }
 
-// HOME
+// 2. HOME PAGE (The "Gateway")
 app.get("/", (req, res) => {
   res.status(200).send(
     renderPage({
-      title: "influ.market – Hire verified influencers in Serbia",
-      heading: "Launching soon — hire verified influencers in Serbia.",
-      subheading: "",
-      buttonLabel: "Join Launch Waitlist",
-      buttonHref:
-        "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform"
+      title: "influ.market – Serbia's Influencer Marketplace",
+      heading: "The creator economy in Serbia, verified.",
+      subheading: "Connecting premium brands with the region's top creators.",
+      buttons: [
+        { label: "I am an Influencer", href: "/influencers" },
+        { label: "I am a Brand", href: "/clients" }
+      ]
     })
   );
 });
 
-// APPLY – INFLUENCER (NEW FORM)
-app.get("/apply/influencer", (req, res) => {
-  res.status(200).send(
-    renderPage({
-      title: "Apply as Influencer – influ.market",
-      heading: "Apply as Influencer",
-      subheading:
-        "Get early access to paid campaigns with verified brands in Serbia.",
-      buttonLabel: "Join Influencer Waitlist",
-      buttonHref:
-        "https://docs.google.com/forms/d/11VXifpfSJ2SObzcgSZS_WiVLtrMIaU-WsIlehflO4eU/viewform"
-    })
-  );
-});
-
-// APPLY – BRAND / CLIENT (NEW FORM)
-app.get("/apply/client", (req, res) => {
-  res.status(200).send(
-    renderPage({
-      title: "Apply as Brand / Client – influ.market",
-      heading: "Apply as Brand / Client",
-      subheading:
-        "Join the waitlist to access vetted influencers and campaign tools.",
-      buttonLabel: "Join Client Waitlist",
-      buttonHref:
-        "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform"
-    })
-  );
-});
-
-// THANK YOU
-app.get("/thank-you", (req, res) => {
-  res.status(200).send(
-    renderPage({
-      title: "Thank you – influ.market",
-      heading: "You're on the list 🎉",
-      subheading:
-        "Thank you for joining the influ.market waitlist. Check your inbox for a confirmation email.",
-      buttonLabel: "Back to homepage",
-      buttonHref: "/"
-    })
-  );
-});
-
-
-// 🔵 INFLUENCERS PAGE (temporary preview)
+// 3. INFLUENCERS PAGE
 app.get("/influencers", (req, res) => {
-  res.status(200).send(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Influencers – influ.market</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif; }
-    .wrap { max-width:860px; margin:0 auto; padding:40px 20px 60px; }
-    h1 { font-size:32px; margin-bottom:10px; }
-    p { color:#555; }
-    .card { padding:12px 0; border-bottom:1px solid #eee; }
-    .name { font-weight:600; }
-    .meta { font-size:14px; color:#666; }
-    a { color:#0055ff; text-decoration:none; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <h1>Influencers Preview</h1>
-    <p>This is a temporary list. Google Sheets connection is coming next 🚀</p>
-
-    <div class="card">
-      <div class="name">Test Influencer 1</div>
-      <div class="meta">Instagram • 8,200 followers</div>
-    </div>
-
-    <div class="card">
-      <div class="name">Test Influencer 2</div>
-      <div class="meta">TikTok • 17,500 followers</div>
-    </div>
-
-    <p><a href="/">← Back to homepage</a></p>
-  </div>
-</body>
-</html>`);
+  res.status(200).send(
+    renderPage({
+      title: "For Creators – influ.market",
+      heading: "Grow your creative business.",
+      subheading: "Get access to exclusive campaigns with verified brands in Serbia.",
+      buttons: [
+        { 
+          label: "Apply to Creator Waitlist", 
+          href: "https://docs.google.com/forms/d/11VXifpfSJ2SObzcgSZS_WiVLtrMIaU-WsIlehflO4eU/viewform",
+          external: true
+        },
+        { label: "← Back", href: "/" }
+      ]
+    })
+  );
 });
 
+// 4. CLIENTS / BRANDS PAGE
+app.get("/clients", (req, res) => {
+  res.status(200).send(
+    renderPage({
+      title: "For Brands – influ.market",
+      heading: "Hire verified talent.",
+      subheading: "Access a curated list of influencers with real engagement data.",
+      buttons: [
+        { 
+          label: "Request Brand Access", 
+          href: "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform",
+          external: true
+        },
+        { label: "← Back", href: "/" }
+      ]
+    })
+  );
+});
 
-// SIMPLE 404 (keep LAST)
+// 5. 404 HANDLER
 app.get("*", (req, res) => {
   res.status(404).send(
     renderPage({
-      title: "404 – Page not found – influ.market",
+      title: "404 – influ.market",
       heading: "Page not found",
-      subheading: "The page you’re looking for doesn’t exist (yet).",
-      buttonLabel: "Back to homepage",
-      buttonHref: "/"
+      subheading: "The page you’re looking for doesn’t exist.",
+      buttons: [{ label: "Return Home", href: "/" }]
     })
   );
 });
 
 app.listen(PORT, () => {
-  console.log("influ.market running on port " + PORT);
+  console.log("influ.market is live on port " + PORT);
 });
