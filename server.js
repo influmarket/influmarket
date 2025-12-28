@@ -10,7 +10,7 @@ const influencers = JSON.parse(
   fs.readFileSync(path.join(__dirname, "data", "influencers.json"), "utf8")
 );
 
-// ---- Small helpers ----
+// helper for all the simple pages
 function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -77,7 +77,11 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
     <h1>influ.market</h1>
     ${heading ? `<h2>${heading}</h2>` : ""}
     ${subheading ? `<p>${subheading}</p>` : ""}
-    ${buttonLabel && buttonHref ? `<a class="btn" href="${buttonHref}" target="_blank" rel="noopener">${buttonLabel}</a>` : ""}
+    ${
+      buttonLabel && buttonHref
+        ? `<a class="btn" href="${buttonHref}" target="_blank" rel="noopener">${buttonLabel}</a>`
+        : ""
+    }
     <footer>
       Marketplace launching soon<br />
       Company based in Miami, USA
@@ -87,7 +91,6 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
 </html>`;
 }
 
-// format helper for followers
 function formatNumber(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -116,7 +119,6 @@ app.get("/apply/influencer", (req, res) => {
       heading: "Apply as Influencer",
       subheading:
         "Get early access to paid campaigns with verified brands in Serbia.",
-      // ✅ use your NEW influencer waitlist form here
       buttonLabel: "Join Influencer Waitlist",
       buttonHref:
         "https://docs.google.com/forms/d/11VXifpfSJ2SObzcgSZS_WiVLtrMIaU-WsIlehflO4eU/viewform"
@@ -132,7 +134,6 @@ app.get("/apply/client", (req, res) => {
       heading: "Apply as Brand / Client",
       subheading:
         "Join the waitlist to access vetted influencers and campaign tools.",
-      // ✅ use your NEW brand waitlist form here
       buttonLabel: "Join Client Waitlist",
       buttonHref:
         "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform"
@@ -140,7 +141,7 @@ app.get("/apply/client", (req, res) => {
   );
 });
 
-// INFLUENCERS LIST
+// INFLUENCERS LIST  (THIS is the page you want)
 app.get("/influencers", (req, res) => {
   const cardsHtml = influencers
     .map((inf) => {
@@ -284,7 +285,7 @@ app.get("/thank-you", (req, res) => {
   );
 });
 
-// SIMPLE 404 (must be last)
+// 404 (must be LAST!)
 app.get("*", (req, res) => {
   res.status(404).send(
     renderPage({
