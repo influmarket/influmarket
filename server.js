@@ -3,32 +3,6 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// TEMP: hard-coded influencers so /influencers always shows something
-const influencers = [
-  {
-    name: "Test Influencer 1",
-    platform: "Instagram",
-    niche: "Fashion & Lifestyle",
-    city: "Belgrade",
-    country: "Serbia",
-    followers: 12000,
-    priceFrom: 80,
-    priceTo: 150,
-    profileUrl: "https://instagram.com/"
-  },
-  {
-    name: "Test Influencer 2",
-    platform: "TikTok",
-    niche: "Beauty",
-    city: "Novi Sad",
-    country: "Serbia",
-    followers: 25000,
-    priceFrom: 120,
-    priceTo: 250,
-    profileUrl: "https://tiktok.com/"
-  }
-];
-
 // Shared template for simple pages
 function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
   return `<!DOCTYPE html>
@@ -112,6 +86,7 @@ app.get("/", (req, res) => {
       title: "influ.market – Hire verified influencers in Serbia",
       heading: "Launching soon — hire verified influencers in Serbia.",
       subheading: "",
+      // you can keep this as brand/launch waitlist
       buttonLabel: "Join Launch Waitlist",
       buttonHref:
         "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform"
@@ -119,7 +94,7 @@ app.get("/", (req, res) => {
   );
 });
 
-// APPLY — INFLUENCER
+// APPLY — INFLUENCER (NEW FORM)
 app.get("/apply/influencer", (req, res) => {
   res.send(
     renderPage({
@@ -163,66 +138,66 @@ app.get("/thank-you", (req, res) => {
   );
 });
 
-// INFLUENCERS — SIMPLE LIST PAGE
+// INFLUENCERS — test page (no JSON, just hard-coded)
 app.get("/influencers", (req, res) => {
-  const cardsHtml = influencers
-    .map(
-      (inf) => `
-      <li class="card">
-        <div class="card-title">${inf.name} – ${inf.platform}</div>
-        <div class="card-meta">${inf.niche} · ${inf.city}, ${inf.country}</div>
-        <div class="card-meta">${inf.followers.toLocaleString()} followers · Range: €${inf.priceFrom}–€${inf.priceTo} per post</div>
-        <div class="card-link"><a href="${inf.profileUrl}" target="_blank" rel="noopener">View profile</a></div>
-      </li>
-    `
-    )
-    .join("");
-
-  res.send(`<!DOCTYPE html>
+  const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Discover influencers in Serbia – influ.market</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<style>
-  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif; }
-  .wrap { max-width:840px; margin:0 auto; padding:40px 20px 60px; }
-  h1 { font-size:32px; margin-bottom:8px; }
-  p { color:#555; margin-bottom:24px; }
-  .list { list-style:none; padding:0; margin:24px 0 40px; }
-  .card { padding:16px 0; border-bottom:1px solid #eee; }
-  .card-title { font-weight:600; font-size:17px; margin-bottom:4px; }
-  .card-meta { font-size:14px; color:#666; margin:2px 0; }
-  .card-link a { font-size:14px; color:#0066ff; text-decoration:none; }
-  .card-link a:hover { text-decoration:underline; }
-  .btn {
-    display:inline-block;
-    margin-top:16px;
-    padding:12px 26px;
-    border-radius:999px;
-    text-decoration:none;
-    font-weight:600;
-    font-size:15px;
-    background:#111;
-    color:#fff;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>Influencers – influ.market</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif; }
+    .wrap { max-width:840px; margin:0 auto; padding:40px 20px 60px; }
+    h1 { font-size:32px; margin-bottom:16px; }
+    p { color:#555; margin-bottom:24px; }
+    ul { list-style:none; padding:0; margin:0 0 24px; }
+    li { padding:12px 0; border-bottom:1px solid #eee; }
+    .name { font-weight:600; }
+    .meta { font-size:14px; color:#666; }
+    a { color:#0066ff; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    .btn {
+      display:inline-block;
+      margin-top:16px;
+      padding:12px 26px;
+      border-radius:999px;
+      text-decoration:none;
+      font-weight:600;
+      font-size:15px;
+      background:#111;
+      color:#fff;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="logo" style="font-weight:600;margin-bottom:12px;">influ.market</div>
-  <h1>Discover influencers in Serbia</h1>
-  <p>Early preview of the marketplace. Final listings and pricing will be adjusted per campaign.</p>
-  <ul class="list">
-    ${cardsHtml}
-  </ul>
-  <a class="btn" href="/apply/client">→ Apply as Brand / Client</a>
-</div>
+  <div class="wrap">
+    <div style="font-weight:600;margin-bottom:8px;">influ.market</div>
+    <h1>Discover influencers in Serbia</h1>
+    <p>Early preview of the marketplace. This is a test list so we can confirm the page works.</p>
+
+    <ul>
+      <li>
+        <div class="name">Test Influencer 1 – Instagram</div>
+        <div class="meta">Fashion & Lifestyle · Belgrade, Serbia · 12,000 followers</div>
+        <a href="https://instagram.com" target="_blank" rel="noopener">View profile</a>
+      </li>
+      <li>
+        <div class="name">Test Influencer 2 – TikTok</div>
+        <div class="meta">Beauty · Novi Sad, Serbia · 25,000 followers</div>
+        <a href="https://tiktok.com" target="_blank" rel="noopener">View profile</a>
+      </li>
+    </ul>
+
+    <a class="btn" href="/apply/client">→ Apply as Brand / Client</a><br/>
+    <a href="/">← Back to homepage</a>
+  </div>
 </body>
-</html>`);
+</html>`;
+  res.send(html);
 });
 
-// NOTE: NO app.get("*") 404 ROUTE HERE ON PURPOSE
+// ❌ no custom 404 handler here on purpose
 
 app.listen(PORT, () => {
   console.log("influ.market running on port " + PORT);
