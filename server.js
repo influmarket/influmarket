@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 
-// Use Hostinger's assigned port or default to 3000 for local testing
+// Hostinger assigns the PORT dynamically
 const PORT = process.env.PORT || 3000;
 
 // 1. REUSABLE LAYOUT
@@ -63,9 +63,9 @@ function renderPage({ title, heading, subheading, buttons }) {
 </html>`;
 }
 
-// 2. ROUTES
+// 2. ROUTES (Order is critical to avoid 404 errors)
 
-// BRAND-FIRST HOMEPAGE (/)
+// BRAND-FIRST HOMEPAGE
 app.get("/", (req, res) => {
   res.send(renderPage({
     title: "influ.market – Serbia",
@@ -78,8 +78,7 @@ app.get("/", (req, res) => {
   }));
 });
 
-// MARKETPLACE PREVIEW (/influencers)
-// This serves as proof for brands that talent is ready.
+// MARKETPLACE PREVIEW (Serves as proof for brands)
 app.get("/influencers", (req, res) => {
   res.send(renderPage({
     title: "Discover Influencers – influ.market",
@@ -92,8 +91,7 @@ app.get("/influencers", (req, res) => {
   }));
 });
 
-// INFLUENCER APPLICATION (/apply/influencer)
-// High-stakes, invite-only application path.
+// NEW INFLUENCER APPLICATION ROUTE
 app.get("/apply/influencer", (req, res) => {
   res.send(renderPage({
     title: "Apply as Influencer – influ.market",
@@ -110,7 +108,7 @@ app.get("/apply/influencer", (req, res) => {
   }));
 });
 
-// BRAND APPLICATION (/clients)
+// BRAND APPLICATION ROUTE
 app.get("/clients", (req, res) => {
   res.send(renderPage({
     title: "For Brands – influ.market",
@@ -127,7 +125,7 @@ app.get("/clients", (req, res) => {
   }));
 });
 
-// 404 CATCH-ALL (Must stay last to avoid blocking other routes)
+// 404 CATCH-ALL (Must be last)
 app.get("*", (req, res) => {
   res.status(404).send(renderPage({
     title: "404 - Not Found",
