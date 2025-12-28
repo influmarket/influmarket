@@ -5,23 +5,24 @@ const PORT = process.env.PORT || 3000;
 
 // === Google Sheet config for influencers ===========================
 const INFLU_SHEET_ID = "1MJAvgLtjatLoSPqMkky3tYCFhI-uUNZQvrJxzFW5i3U";
-const INFLU_SHEET_GID = "1064161392";
+// Use this tab (gid) for influencers:
+const INFLU_SHEET_GID = "1432199755";
 const MIN_FOLLOWERS = 5000; // only show 5k+
 
-// Which column is what in the sheet (0-based index)
+// Column mapping (0-based index) – adjust if your sheet changes
+// 0 is usually Timestamp
 const INFLU_COLS = {
-  // 0 is usually Timestamp
   name: 1,
   platform: 2,
   niche: 3,
   location: 4,
   followers: 5,
   priceRange: 6,
-  profileUrl: 7,
+  profileUrl: 7
 };
 
-// ================================================================
-// small helpers
+// ===== Helpers =====================================================
+
 function escapeHtml(str = "") {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -37,7 +38,6 @@ function parseFollowers(raw) {
   return Number.isNaN(num) ? null : num;
 }
 
-// Layout helper
 function renderPage({ title, heading, subheading, buttonLabel, buttonHref, bodyHtml }) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -105,7 +105,6 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref, bodyH
       color: #777;
     }
 
-    /* Influencer list styles */
     main {
       max-width: 860px;
       margin: 32px auto 0;
@@ -168,7 +167,7 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref, bodyH
 </html>`;
 }
 
-// === Fetch influencers from Google Sheets =========================
+// ===== Google Sheets fetch ========================================
 
 async function fetchInfluencersFromSheet() {
   const url = `https://docs.google.com/spreadsheets/d/${INFLU_SHEET_ID}/gviz/tq?gid=${INFLU_SHEET_GID}&tqx=out:json`;
@@ -179,12 +178,9 @@ async function fetchInfluencersFromSheet() {
   }
   const text = await resp.text();
 
-  // Strip the JS wrapper around the JSON
+  // Strip the JS wrapper Google adds around the JSON
   const jsonStr = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
   const data = JSON.parse(jsonStr);
-
-  const cols = (data.table.cols || []).map(c => c.label);
-  console.log("Influencer sheet columns:", cols);
 
   const rows = data.table.rows || [];
 
@@ -202,26 +198,24 @@ async function fetchInfluencersFromSheet() {
       const followers = parseFollowers(followersRaw);
 
       return {
-        name: name,
+        name,
         platform: cell(row, INFLU_COLS.platform),
         niche: cell(row, INFLU_COLS.niche),
         location: cell(row, INFLU_COLS.location),
         followers,
         followersLabel: followersRaw || "",
         priceRange: cell(row, INFLU_COLS.priceRange),
-        profileUrl: cell(row, INFLU_COLS.profileUrl),
+        profileUrl: cell(row, INFLU_COLS.profileUrl)
       };
     })
     .filter(Boolean)
     .filter(inf => !inf.followers || inf.followers >= MIN_FOLLOWERS);
 
-  // sort by followers desc (unknown followers go last)
   influencers.sort((a, b) => (b.followers || 0) - (a.followers || 0));
-
   return influencers;
 }
 
-// === ROUTES =======================================================
+// ===== ROUTES =====================================================
 
 // HOME
 app.get("/", (req, res) => {
@@ -237,7 +231,7 @@ app.get("/", (req, res) => {
   );
 });
 
-// APPLY – INFLUENCER
+// APPLY – INFLUENCER (🔗 NEW INFLUENCER FORM)
 app.get("/apply/influencer", (req, res) => {
   res.status(200).send(
     renderPage({
@@ -247,12 +241,12 @@ app.get("/apply/influencer", (req, res) => {
         "Get early access to paid campaigns with verified brands in Serbia.",
       buttonLabel: "Join Influencer Waitlist",
       buttonHref:
-        "https://docs.google.com/forms/d/e/1FAIpQLScQ3ktJwoEKiKiLA35LkrK2SdzrlSJyFweY9bTOXB0_8Y3cXA/viewform"
+        "https://docs.google.com/forms/d/e/1FAIpQLSdu4-BfogXhBgUhYIF1BlpXUpp9WPfa7nRe-KGdn2T-89annQ/viewform"
     })
   );
 });
 
-// APPLY – CLIENT / BRAND
+// APPLY – CLIENT / BRAND (🔗 BRAND FORM)
 app.get("/apply/client", (req, res) => {
   res.status(200).send(
     renderPage({
@@ -262,7 +256,7 @@ app.get("/apply/client", (req, res) => {
         "Join the waitlist to access vetted influencers and campaign tools.",
       buttonLabel: "Join Client Waitlist",
       buttonHref:
-        "https://docs.google.com/forms/d/e/1FAIpQLSdu4-BfogXhBgUhYIF1BlpXUpp9WPfa7nRe-KGdn2T-89annQ/viewform"
+        "https://docs.google.com/forms/d/e/1FAIpQLSfjK-X9CMYe3qTZXvb_pXhGtIF2xz8877vC4MrE9o4xIPXyiA/viewform"
     })
   );
 });
@@ -288,17 +282,15 @@ app.get("/influencers", async (req, res) => {
 
               return `
         <article class="card">
-          <h3>${escapeHtml(inf.name)}${inf.platform ? " – " + escapeHtml(inf.platform) : ""}</h3>
+          <h3>${escapeHtml(inf.name)}${
+                inf.platform ? " – " + escapeHtml(inf.platform) : ""
+              }</h3>
           <p class="extra">
             ${inf.niche ? escapeHtml(inf.niche) : ""}${
                 inf.location ? (inf.niche ? " · " : "") + escapeHtml(inf.location) : ""
               }
           </p>
-          ${
-            metaLine
-              ? `<p class="meta">${metaLine}</p>`
-              : ""
-          }
+          ${metaLine ? `<p class="meta">${metaLine}</p>` : ""}
           ${
             inf.profileUrl
               ? `<a class="profile-link link" href="${escapeHtml(
