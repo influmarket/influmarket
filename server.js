@@ -5,16 +5,9 @@ const PORT = process.env.PORT || 3000;
 
 // 1. REUSABLE LAYOUT
 function renderPage({ title, heading, subheading, buttons }) {
-  const buttonHtml = buttons
-    ? buttons
-        .map(
-          (btn) =>
-            `<a class="btn" href="${btn.href}" ${
-              btn.external ? 'target="_blank" rel="noopener"' : ""
-            }>${btn.label}</a>`
-        )
-        .join("")
-    : "";
+  const buttonHtml = buttons ? buttons.map(btn => 
+    `<a class="btn" href="${btn.href}" ${btn.external ? 'target="_blank" rel="noopener"' : ''}>${btn.label}</a>`
+  ).join('') : '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -69,89 +62,51 @@ function renderPage({ title, heading, subheading, buttons }) {
 
 // 2. ROUTES (Order matters!)
 
-// HOME — brand first
+// HOME
 app.get("/", (req, res) => {
-  res.send(
-    renderPage({
-      title: "influ.market – Serbia",
-      heading: "Hire verified micro-influencers in Serbia.",
-      subheading:
-        "Beauty, fitness, tech & lifestyle creators with real engagement. No agencies. No fake numbers.",
-      buttons: [
-        { label: "Apply as Brand", href: "/clients" },
-        {
-          label: "Are you an Influencer? Apply to Join",
-          href: "/apply/influencer",
-        },
-      ],
-    })
-  );
+  res.send(renderPage({
+    title: "influ.market – Serbia",
+    heading: "The creator economy in Serbia, verified.",
+    buttons: [
+      { label: "I am an Influencer", href: "/influencers" },
+      { label: "I am a Brand", href: "/clients" }
+    ]
+  }));
 });
 
-// INFLUENCERS — marketplace preview (proof)
+// INFLUENCERS PAGE
 app.get("/influencers", (req, res) => {
-  res.send(
-    renderPage({
-      title: "Discover Influencers – influ.market",
-      heading: "Preview of creators on influ.market",
-      subheading:
-        "Early marketplace preview. Final listings and pricing are adjusted per campaign.",
-      buttons: [
-        { label: "Apply as Brand / Client", href: "/clients" },
-        { label: "← Back", href: "/" },
-      ],
-    })
-  );
+  res.send(renderPage({
+    title: "For Influencers – influ.market",
+    heading: "Apply as Influencer",
+    subheading: "Get early access to paid campaigns in Serbia.",
+    buttons: [
+      { label: "Join Waitlist", href: "https://docs.google.com/forms/d/11VXifpfSJ2SObzcgSZS_WiVLtrMIaU-WsIlehflO4eU/viewform", external: true },
+      { label: "← Back", href: "/" }
+    ]
+  }));
 });
 
-// APPLY AS INFLUENCER — invite only
-app.get("/apply/influencer", (req, res) => {
-  res.send(
-    renderPage({
-      title: "Apply as Influencer – influ.market",
-      heading: "Apply to join influ.market",
-      subheading:
-        "influ.market is invite-only. We work with a limited number of vetted creators in Serbia.",
-      buttons: [
-        {
-          label: "Apply for Consideration",
-          href: "https://docs.google.com/forms/d/11VXifpfSJ2SObzcgSZS_WiVLtrMIaU-WsIlehflO4eU/viewform",
-          external: true,
-        },
-        { label: "← Back", href: "/" },
-      ],
-    })
-  );
-});
-
-// CLIENTS PAGE — unchanged
+// CLIENTS PAGE
 app.get("/clients", (req, res) => {
-  res.send(
-    renderPage({
-      title: "For Brands – influ.market",
-      heading: "Apply as Brand",
-      subheading: "Hire vetted influencers with real engagement.",
-      buttons: [
-        {
-          label: "Get Early Access",
-          href: "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform",
-          external: true,
-        },
-        { label: "← Back", href: "/" },
-      ],
-    })
-  );
+  res.send(renderPage({
+    title: "For Brands – influ.market",
+    heading: "Apply as Brand",
+    subheading: "Hire vetted influencers with real engagement.",
+    buttons: [
+      { label: "Get Early Access", href: "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform", external: true },
+      { label: "← Back", href: "/" }
+    ]
+  }));
 });
 
-// 404 PAGE
+// 404 PAGE (Always keep this last)
 app.get("*", (req, res) => {
-  res.status(404).send(
-    renderPage({
-      title: "404 - Not Found",
-      heading: "Page not found",
-      buttons: [{ label: "Back Home", href: "/" }],
-    })
-  );
+  res.status(404).send(renderPage({
+    title: "404 - Not Found",
+    heading: "Page not found",
+    buttons: [{ label: "Back Home", href: "/" }]
+  }));
 });
 
 app.listen(PORT, () => {
