@@ -91,7 +91,6 @@ app.get("/", (req, res) => {
       title: "influ.market – Hire verified influencers in Serbia",
       heading: "Launching soon — hire verified influencers in Serbia.",
       subheading: "",
-      // you can keep this as your general launch/brand waitlist
       buttonLabel: "Join Launch Waitlist",
       buttonHref:
         "https://docs.google.com/forms/d/1ZOeHKWbkNz-WjMOHhwTbQRxkCFjhBLFUdaCKFCx66eI/viewform"
@@ -142,6 +141,48 @@ app.get("/thank-you", (req, res) => {
     })
   );
 });
+
+
+// 🔵 INFLUENCERS PAGE (temporary preview)
+app.get("/influencers", (req, res) => {
+  res.status(200).send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Influencers – influ.market</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial,sans-serif; }
+    .wrap { max-width:860px; margin:0 auto; padding:40px 20px 60px; }
+    h1 { font-size:32px; margin-bottom:10px; }
+    p { color:#555; }
+    .card { padding:12px 0; border-bottom:1px solid #eee; }
+    .name { font-weight:600; }
+    .meta { font-size:14px; color:#666; }
+    a { color:#0055ff; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Influencers Preview</h1>
+    <p>This is a temporary list. Google Sheets connection is coming next 🚀</p>
+
+    <div class="card">
+      <div class="name">Test Influencer 1</div>
+      <div class="meta">Instagram • 8,200 followers</div>
+    </div>
+
+    <div class="card">
+      <div class="name">Test Influencer 2</div>
+      <div class="meta">TikTok • 17,500 followers</div>
+    </div>
+
+    <p><a href="/">← Back to homepage</a></p>
+  </div>
+</body>
+</html>`);
+});
+
 
 // SIMPLE 404 (keep LAST)
 app.get("*", (req, res) => {
