@@ -3,8 +3,67 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-// small helper to reuse the same layout
-function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
+// ---------------------------------------------------------------------
+// Small demo dataset – later this will come from your Google Sheets/Form
+// ---------------------------------------------------------------------
+const influencers = [
+  {
+    name: "Ana Jovanović",
+    platform: "Instagram",
+    niche: "Beauty & Lifestyle",
+    city: "Belgrade",
+    country: "Serbia",
+    followers: 5200,
+    priceFrom: 30,
+    priceTo: 80,
+    profileUrl: "https://instagram.com/example_ana"
+  },
+  {
+    name: "Marko Petrović",
+    platform: "TikTok",
+    niche: "Comedy & Relatable skits",
+    city: "Novi Sad",
+    country: "Serbia",
+    followers: 11800,
+    priceFrom: 50,
+    priceTo: 150,
+    profileUrl: "https://www.tiktok.com/@example_marko"
+  },
+  {
+    name: "Mila Stanković",
+    platform: "Instagram",
+    niche: "Fitness & Wellness",
+    city: "Niš",
+    country: "Serbia",
+    followers: 27600,
+    priceFrom: 80,
+    priceTo: 250,
+    profileUrl: "https://instagram.com/example_mila"
+  },
+  {
+    name: "Luka Ilić",
+    platform: "YouTube",
+    niche: "Tech & Gadgets",
+    city: "Belgrade",
+    country: "Serbia",
+    followers: 43000,
+    priceFrom: 120,
+    priceTo: 350,
+    profileUrl: "https://youtube.com/@example_luka"
+  }
+];
+
+// ------------------------------------------------------
+// small helper to reuse the same layout (now with extraHtml)
+// ------------------------------------------------------
+function renderPage({
+  title,
+  heading,
+  subheading,
+  buttonLabel,
+  buttonHref,
+  extraHtml
+}) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,6 +129,35 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
       font-size: 14px;
       color: #777;
     }
+    /* simple styles for the influencers list */
+    .list {
+      text-align: left;
+      margin: 32px auto 0;
+      max-width: 640px;
+      padding: 0;
+      list-style: none;
+    }
+    .card {
+      padding: 16px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .card-title {
+      font-weight: 600;
+      font-size: 17px;
+    }
+    .card-meta {
+      font-size: 14px;
+      color: #666;
+      margin: 4px 0;
+    }
+    .card-link a {
+      font-size: 14px;
+      color: #0066ff;
+      text-decoration: none;
+    }
+    .card-link a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -77,7 +165,10 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
     <h1>influ.market</h1>
     ${heading ? `<h2>${heading}</h2>` : ""}
     ${subheading ? `<p>${subheading}</p>` : ""}
-    ${buttonLabel && buttonHref ? `<a class="btn" href="${buttonHref}" target="_blank" rel="noopener">${buttonLabel}</a>` : ""}
+    ${buttonLabel && buttonHref
+      ? `<a class="btn" href="${buttonHref}" target="_blank" rel="noopener">${buttonLabel}</a>`
+      : ""}
+    ${extraHtml || ""}
     <footer>
       Marketplace launching soon<br />
       Company based in Miami, USA
@@ -87,7 +178,9 @@ function renderPage({ title, heading, subheading, buttonLabel, buttonHref }) {
 </html>`;
 }
 
+// ------------------------------------------------------
 // HOME
+// ------------------------------------------------------
 app.get("/", (req, res) => {
   res.status(200).send(
     renderPage({
@@ -101,7 +194,9 @@ app.get("/", (req, res) => {
   );
 });
 
+// ------------------------------------------------------
 // APPLY – INFLUENCER
+// ------------------------------------------------------
 app.get("/apply/influencer", (req, res) => {
   res.status(200).send(
     renderPage({
@@ -116,7 +211,9 @@ app.get("/apply/influencer", (req, res) => {
   );
 });
 
+// ------------------------------------------------------
 // APPLY – CLIENT / BRAND
+// ------------------------------------------------------
 app.get("/apply/client", (req, res) => {
   res.status(200).send(
     renderPage({
@@ -131,7 +228,52 @@ app.get("/apply/client", (req, res) => {
   );
 });
 
+// ------------------------------------------------------
+// INFLUENCER DIRECTORY (demo)
+// ------------------------------------------------------
+app.get("/influencers", (req, res) => {
+  const listItems = influencers
+    .map(
+      (inf) => `
+      <li class="card">
+        <div class="card-title">${inf.name} – ${inf.platform}</div>
+        <div class="card-meta">
+          ${inf.niche} · ${inf.city}, ${inf.country}
+        </div>
+        <div class="card-meta">
+          ${inf.followers.toLocaleString("en-US")} followers ·
+          Range: €${inf.priceFrom}–€${inf.priceTo} per post
+        </div>
+        <div class="card-link">
+          <a href="${inf.profileUrl}" target="_blank" rel="noopener">View profile</a>
+        </div>
+      </li>`
+    )
+    .join("");
+
+  const extraHtml = `
+    <ul class="list">
+      ${listItems}
+    </ul>
+    <a class="link" href="/apply/client">→ Apply as Brand / Client</a>
+  `;
+
+  res.status(200).send(
+    renderPage({
+      title: "Influencer Directory – influ.market",
+      heading: "Discover influencers in Serbia",
+      subheading:
+        "Early preview of the marketplace. Final listings and pricing will be adjusted per campaign.",
+      buttonLabel: "",
+      buttonHref: "",
+      extraHtml
+    })
+  );
+});
+
+// ------------------------------------------------------
 // THANK YOU
+// ------------------------------------------------------
 app.get("/thank-you", (req, res) => {
   res.status(200).send(
     renderPage({
@@ -145,7 +287,9 @@ app.get("/thank-you", (req, res) => {
   );
 });
 
+// ------------------------------------------------------
 // SIMPLE 404
+// ------------------------------------------------------
 app.get("*", (req, res) => {
   res.status(404).send(
     renderPage({
