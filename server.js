@@ -67,7 +67,7 @@ function renderPage({ title, heading, subheading, buttons }) {
     <div class="btn-container">
       ${buttonHtml}
     </div>
-    <footer>Marketplace launching soon • Miami & Belgrade</footer>
+    <footer>Marketplace launching soon • International</footer>
   </div>
 </body>
 </html>`;
